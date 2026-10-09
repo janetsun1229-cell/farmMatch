@@ -106,25 +106,26 @@
   .hold.wool { background: #d7efc4; }
   #tray {
     height: 74px;
-    background: linear-gradient(#e0a15a, #c4843c);
+    background: linear-gradient(#d4924a, #b87434);
     border: 4px solid #7a4a22;
     border-radius: 10px 10px 18px 18px;
-    box-shadow: inset 0 8px 0 #efc07a, 0 4px 0 #6a3e18;
+    box-shadow: inset 0 2px 0 rgba(239,192,122,.55), 0 4px 0 #6a3e18;
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 4px;
-    padding: 8px 10px;
+    padding: 3px 8px 4px;
+    align-items: stretch;
     transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
   }
   #tray.warn {
-    background: linear-gradient(#ffb04a, #f07820);
+    background: linear-gradient(#f09840, #e06818);
     border-color: #c45a10;
-    box-shadow: inset 0 8px 0 #ffd08a, 0 4px 0 #a04810;
+    box-shadow: inset 0 2px 0 rgba(255,208,138,.55), 0 4px 0 #a04810;
     animation: trayWarnPulse 0.9s ease 2;
   }
   @keyframes trayWarnPulse {
     0%, 100% { filter: brightness(1); }
-    40% { filter: brightness(1.35); box-shadow: inset 0 8px 0 #ffe0a0, 0 4px 0 #a04810, 0 0 14px rgba(255,140,40,.65); }
+    40% { filter: brightness(1.35); box-shadow: inset 0 2px 0 rgba(255,224,160,.7), 0 4px 0 #a04810, 0 0 14px rgba(255,140,40,.65); }
   }
   .slot.pop { overflow: visible; z-index: 5; }
   .slot.pop img { animation: matchPop 0.35s ease forwards; }
@@ -186,7 +187,9 @@
   }
   .slot {
     border-radius: 8px;
-    background: rgba(90, 48, 16, 0.18);
+    background: rgba(72, 38, 12, 0.42);
+    min-height: 0;
+    height: 100%;
     display: flex; align-items: center; justify-content: center;
     overflow: hidden;
   }
