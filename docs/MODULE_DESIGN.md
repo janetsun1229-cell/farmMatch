@@ -234,3 +234,4 @@ src/iap/
 - `invite`：邀请码生成、归因、双向发奖、日/终身上限。
 - `deeplink`：Universal/App Links + scheme；deferred install；路由表 invite/gift/challenge/shop。
 - `rate_prompt`：连胜与关卡钩子；In-App Review；冷却与弹窗互斥。
+- `gift_remind`：收礼推送、晚间未送出提醒、红点、通知权限时机。
