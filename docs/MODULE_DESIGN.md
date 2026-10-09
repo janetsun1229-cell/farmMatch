@@ -128,3 +128,7 @@ farm_match_api/          # NestJS
 ## 7. 相关文档
 - 架构方案：`docs/TECH_ARCHITECTURE.md` / Notion 架构页
 - 产品功能与数值：`docs/GAME_FEATURES.md`
+
+## 8. 账号、云存档与好友互赠（产品 v1.1）
+
+客户端模块 `auth`、`cloud_save`、`gift`：默认游客本机档；第 5 关过关后可跳过绑定 X/Facebook；第 8 关撤回解锁后再推绑定并邀请好友。登录后云同步进度、道具与权益。规则与 Param ID 见 `GAME_FEATURES.md` §3.7.1、§3.7.1b、§5.14；后台 API 见 `TECH_ARCHITECTURE.md` 修订附记 v1.2。Restore Purchases 仍只恢复去广告与关卡包。
