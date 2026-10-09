@@ -2,7 +2,7 @@
 
 | 字段 | 内容 |
 |------|------|
-| 文档版本 | v1.1 |
+| 文档版本 | v1.0 |
 | 产品中文名 | 农场配对 |
 | 产品英文名 | Farm Match |
 | 受众 | 产品负责人 birdy、客户端 / 服务端工程师 |
@@ -322,6 +322,40 @@ Farm Match 是一款面向美国休闲市场的 **三消牌堆（Triple Match Ti
 - 接收：不强制与送出同上限；同一好友同一天最多收 **1 次**，防刷。
 - 赠送不扣自己库存以外的「赠送额度」以外资源；具体是「从每日免费赠送池发送」还是「从自己库存扣 1」：默认 **每日免费赠送池**（不扣库存），避免伤付费。
 - 失败或道具为 0 时可展示「向好友要一次」，跳转邀请 / 好友列表。
+
+#### 3.7.1c 双向邀请奖励
+
+- **触发**：已绑定用户分享邀请链接 / 码；被邀请人**新安装**并**通关第 1 关**后，双方各得奖励。
+- **奖励（锁定）**：双方各得 **Move +2、Undo +2、Shuffle +2**（一次成功邀请结算一次）。
+- **归因**：被邀请人首次打开带邀请参数；通关 L1 后写入「已归因」；同一账号 / 同一设备只归因一次。
+- **邀请人上限**：每日成功邀请结算最多 **5** 次；终身成功邀请奖励次数上限 **50**（防刷）。
+- **被邀请人**：必须是新用户（本机无旧进度，或账号创建 < 24h 且未过 L1）；老号不可冒领。
+- **未登录邀请人**：L8 引导绑定后再发有效邀请链接；未绑定分享只给「装好游戏」链，不发双向奖励。
+- **文案方向（英文 UI）**：`Invite friends — you both get free boosts`；结算 Toast：`You and {name} got boosts!`
+
+#### 3.7.1d 深链落地（Deep Link）
+
+- **目标**：点分享 / 推送 / 广告链进 App，**不得落空白首页**，要直达意图页。
+- **链路类型**
+  | 类型 | 示例参数 | 落地 |
+  |------|----------|------|
+  | 邀请 | `invite?code=` | 首页叠「接受邀请」或自动归因 + 轻提示去打第 1 关 |
+  | 赠礼 | `gift?from=&type=` | 打开礼物收件 / Toast 领取，再回首页 |
+  | 挑战 | `challenge?level=` | 若关卡已解锁则进该关；未解锁则提示并停在首页方钮 |
+  | 商店 | `shop?sku=` | 打开商店对应商品（二期可做） |
+- **技术**：iOS Universal Links + Android App Links；自定义 scheme `farmmatch://` 作兜底；未安装走商店 + **延迟深链**（Firebase Dynamic Links / 等价方案，实现选型由研发定，产品要求：装完首次打开仍能带上邀请码）。
+- **冷启动顺序**：解析深链 → 游客/登录态就绪 → 再导航；解析失败才进普通首页。
+- **网页版**：本版**不做**深链与邀请结算（仅 Flutter `farmMatch-app`）。
+
+#### 3.7.1e 软引导评星
+
+- **触发（满足其一，且未在冷却中）**
+  1. **连续过关 ≥ 3**（同次会话或累计连胜，失败打断连胜）；或
+  2. 首次通关 **第 10 关**；或
+  3. 首次通关 **第 20 关**。
+- **形态**：系统原生 In-App Review（iOS StoreKit / Google Play In-App Review）；**不**自做跳商店的强弹窗（除非系统 API 不可用时降级为一次可跳过的「Enjoying Farm Match?」→ Rate / Later）。
+- **规则**：可跳过；**失败弹框后不评星**；同一自然日最多展示 1 次；展示过后冷却 **90 天**；用户点过 Rate 后本安装不再主动弹。
+- **不与**绑定弹窗、邀请弹窗同一帧叠出：优先绑定 / 邀请，评星延后到下次过关满足条件时。
 
 #### 3.7.2 免费与关卡包门槛
 
@@ -687,6 +721,27 @@ FailDialog → Home（Home）
 | SOCIAL_GIFT_SAME_FRIEND_DAILY_RECV_MAX | 1 |
 | SOCIAL_GIFT_FROM_FREE_POOL | true（不扣自己库存） |
 
+
+### 5.15 邀请、深链与评星
+
+| Param ID | 值 |
+|----------|-----|
+| INVITE_REWARD_BOTH | move+2, undo+2, shuffle+2 |
+| INVITE_REQUIRE_CLEAR_LEVEL | 1 |
+| INVITE_INVITER_DAILY_SUCCESS_MAX | 5 |
+| INVITE_INVITER_LIFETIME_SUCCESS_MAX | 50 |
+| INVITE_REQUIRE_INVITER_BOUND | true |
+| INVITE_NEW_USER_MAX_ACCOUNT_AGE_H | 24 |
+| DEEPLINK_SCHEME | farmmatch:// |
+| DEEPLINK_TYPES | invite / gift / challenge / shop |
+| DEEPLINK_DEFERRED | true（未安装保留归因） |
+| RATE_PROMPT_STREAK_CLEARS | 3 |
+| RATE_PROMPT_LEVELS | 10, 20（各首次） |
+| RATE_PROMPT_COOLDOWN_DAYS | 90 |
+| RATE_PROMPT_MAX_PER_DAY | 1 |
+| RATE_PROMPT_SKIP_ON_FAIL | true |
+| RATE_PROMPT_NOT_WITH_AUTH_SHEETS | true |
+
 ## 6. 调参指引
 
 ### 6.1 提高难度（更难通关）的旋钮
@@ -729,6 +784,7 @@ FailDialog → Home（Home）
 |------|------|------|
 | v1.0 | 2026-10-09 | 首版完整功能规格：核心三消、双堆叠、50 关难度带、道具与软辅助、Home 流程、Juice、本地进度与 IAP、远程配置建议与 Param ID 数值表 |
 | v1.1 | 2026-10-09 | 默认免登录；L5 过关提示绑 X/Facebook 云存档（可跳过）；L8 再推绑定+邀请好友；登录后云同步；好友每日互赠同种道具最多送出 3 次 |
+| v1.2 | 2026-10-09 | 双向邀请奖励（双方道具）；深链落地 invite/gift/challenge；软引导 In-App Review；实现范围仅 farmMatch-app，网页版不做 |
 
 ---
 
